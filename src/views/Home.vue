@@ -1066,7 +1066,7 @@ export default {
           console.log(res);
         })
         .catch((error) => {
-          this.errorMessage = error.response.data.email;
+          // this.errorMessage = error.response.data.email;
           console.log(error.response.data.email);
           this.hasError= true;
           // if (this.hasError)

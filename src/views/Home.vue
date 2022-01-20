@@ -794,7 +794,7 @@
       :retain-focus="false"
     >
       <v-card class="add-supplier-card pa-2">
-        <v-form ref="form" @submit.prevent="dsuccess">
+        <v-form v-model="isFormValid" ref="form" @submit.prevent="dsuccess">
           <v-card-title
             class="v-flex justify-space-between"
             style="border: none !important"
@@ -901,6 +901,7 @@
 
           <v-card-actions style="border: none !important">
             <v-btn
+              :disabled="!isFormValid"
               type="submit"
               color="#0171A1"
               elevation="0"
@@ -962,6 +963,7 @@ export default {
     VueTelInputVuetify,
   },
   data: () => ({
+    isFormValid: false,
     //   model: 0,
     items: [
       "Shipper",
@@ -996,6 +998,7 @@ export default {
     // options: [],
     // value: [],
     rules: [(v) => !!v || "Input is required."],
+    checkRules: [v => !!v || 'You must agree to continue!'],
     telProps: {
       mode: "international",
       defaultCountry: "US",
@@ -1033,6 +1036,7 @@ export default {
       this.dialog = true;
     },
     dsuccess() {
+      this.$refs.form.reset();
       this.dialog = false;
       axios
         .post("https://beta.shifl.com/api/join-waiting-list", this.data)

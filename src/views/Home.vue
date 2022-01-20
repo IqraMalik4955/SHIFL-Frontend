@@ -289,10 +289,7 @@
               <span style="color: #4a4a4a">Meet </span>shifl.capital
             </h2>
             <p class="text-center">
-              A full suite, supply chain integrated checking account with
-              shiflPay which enables free fast payments for shippers and all
-              industry providers between them and other major contributing
-              parties
+              A modern, full-suite supply chain and banking platform - allowing free tracking and easy payments between shippers, suppliers, providers, and any other party.
             </p>
             <div class="d-flex justify-center">
               <v-btn
@@ -333,7 +330,10 @@
                         <template v-slot:icon>
                         <span>1</span>
                         </template>
-                        <h4>Enter MBL number</h4>
+                        <h4>ENTER BOL NUMBER</h4>
+                        <p>
+                          You can optionally add any associated bills, shipment documents, or PO information
+                        </p>
                     </v-timeline-item>
                     <v-timeline-item
                     align-top
@@ -344,7 +344,8 @@
                         <template v-slot:icon>
                         <span>2</span>
                         </template>
-                        <h4>Issue payment</h4>
+                        <h4>AUTOMATIC CARGO VISIBILITY IS ACTIVATED</h4>
+                        <p>Live Shipment Visibility dashboard keeps you up-to-date in real time, helping you proactively manage shipments and initiate payments at the right times.</p>
                     </v-timeline-item>
                     <v-timeline-item
                         fill-dot
@@ -354,12 +355,9 @@
                         <template v-slot:icon>
                         <span>3</span>
                         </template>
-                        <h4>Shifl's automatic Cargo tracking is then initiated</h4>
+                        <h4>ISSUE PAYMENTS</h4>
                         <p>
-                            At any point you can then issues Same Day payments to all carriers, terminals, and other important providers with the click of a button.
-                        </p>
-                        <p>
-                            Instant transfer and/or instant releases available for participating providers.
+                          Pay your suppliers, providers, and other parties with a click. For ShiflPay participants, payments are received instantly.
                         </p>
                     </v-timeline-item>
                     <v-timeline-item
@@ -370,9 +368,9 @@
                         <template v-slot:icon>
                         <span>4</span>
                         </template>
-                        <h4>Terminal release</h4>
+                        <h4>TERMINAL RELEASE (intl’ cargo)</h4>
                         <p>
-                            The payment receipt is automatically forwarded to the provider,  shifl's powerful tracking will follow up to make sure the terminal release is then posted. 
+                          Releases are posted instantly for participating providers. The Shifl software will automatically continue to monitor for ultimate release at the terminal.
                         </p>
                     </v-timeline-item>
                     <v-timeline-item
@@ -384,10 +382,10 @@
                         <span>5</span>
                         </template>
                         <h4>
-                            Monitor release
+                            MONITOR MILESTONES (intl’ cargo)
                         </h4>
                         <p>
-                            You can continue to monitor releases, availability and out gate. As well as demurrage alerts on case of any shipments left after last free day.
+                          See container milestones like origin and destination gate-in/gate-out, live vessel location, and availability. Shipments approaching or past the last free day will show, helping you avoid exorbitant demurrage charges.
                         </p>
                     </v-timeline-item>
 
@@ -873,6 +871,17 @@
                   hide-details="auto"
                 >
                 </v-text-field>
+                  <div v-if="hasError" class="v-text-field__details mt-1">
+                      <div class="v-messages theme--light error--text" role="alert">
+                          <div class="v-messages__wrapper">
+                              <div class="v-messages__message">
+                                  {{
+                                      errorMessage
+                                  }}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
               </v-col>
               <v-col cols="12" sm="12" md="12" lg="6" class="pb-0">
                 <label class="text-item-label">Contact Person</label>
@@ -955,12 +964,15 @@
 <script>
 import axios from "axios";
 import VueTelInputVuetify from "../../node_modules/vue-tel-input-vuetify/lib/vue-tel-input-vuetify";
+// import VueTagsInput from '@johmun/vue-tags-input';
+// import jQuery from 'jquery'
 //import VueTelInputVuetify from "vue-tel-input-vuetify/lib/vue-tel-input-vuetify.vue"
 // import JoinDialog from './Join.vue'
 export default {
   components: {
     // JoinDialog
     VueTelInputVuetify,
+    // VueTagsInput,
   },
   data: () => ({
     isFormValid: false,
@@ -988,7 +1000,11 @@ export default {
       email: "",
       contact_person: "",
     },
-    errorMessage: "",
+    errorMessage: "This email is already in the waiting list. ",
+    hasError: false,
+    tagsInput: {
+            errorMessage: 'This email is already in the waiting list. '
+        },
     // valid: true,
     // telInputOptions: {
     //     showDialCodeInSelection: true,
@@ -1036,21 +1052,27 @@ export default {
       this.dialog = true;
     },
     dsuccess() {
-      this.$refs.form.reset();
-      this.dialog = false;
       axios
         .post("https://beta.shifl.com/api/join-waiting-list", this.data)
         .then((res) => {
           this.dialog = false;
           this.data = "";
           console.log(this.data);
+          this.$refs.form.resetValidation()
+          // this.$refs.form.reset();
+          this.dialog = false;
           setTimeout(2000);
           this.dialogSuccess = true;
           console.log(res);
         })
         .catch((error) => {
-          this.errorMessage = error.message;
+          this.errorMessage = error.response.data.email;
           console.log(error.response.data.email);
+          this.hasError= true;
+          // if (this.hasError)
+          //       jQuery('.ti-input').addClass('ti-new-tag-input-error')
+          //   else
+          //       jQuery('.ti-input').removeClass('ti-new-tag-input-error')
         });
     },
     successclose() {
@@ -1170,7 +1192,11 @@ td {
 }
 .theme--light.v-timeline::before {
  background: rgba(0, 0, 0, 0); 
- border-left: 1px dotted #0171A1
+//  border-left: 1px dotted #0171A1;
+ border-left: 2px dashed #0171A1;
+    left: -20px;
+    right: -20px;
+    position: absolute;
 }
 // .v-timeline{
 //     padding: 0px !important;
@@ -1179,7 +1205,7 @@ td {
 // }
 .v-timeline:before{
     content: "";
-    height: 80%;
+    height: 78%;
     position: absolute;
     top: auto;
     bottom: auto;
